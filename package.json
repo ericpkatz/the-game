@@ -1,0 +1,23 @@
+{
+  "name": "the-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "redis-server & nodemon server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1",
+    "sequelize": "^6.6.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "faker": "^5.4.0",
+    "redis": "^3.0.2",
+    "ws": "^7.4.4"
+  }
+}
