@@ -1,3 +1,5 @@
+const END = process.env.END || 20;
+
 const redis = require('redis');
 const client = redis.createClient(process.env.REDIS_URL);
 const express = require('express');
@@ -68,7 +70,7 @@ User.leaderBoard = function(){
           score: result[i + 1]
         });
       }
-      res(board);
+      res({ leaderBoard: board, isRunning: board[0].score <= END, diff: END - board[0].score, limit: END});
     });
   });
 }
@@ -90,7 +92,7 @@ let running = true;
 const run = async()=> {
   await conn.sync({ force: true });
   await clearRedis();
-  let users = [];
+  let users = [{ name: 'Nicks Brother' }, { name: 'French Pastry' } ];
   while(users.length < 10){
     users.push({ name: `${faker.name.firstName()} ${faker.name.lastName()}`})
   }
@@ -100,10 +102,8 @@ const run = async()=> {
   const generatePoints = async()=> {
     const user = faker.random.arrayElement(users);
     await Point.create({ userId: user.id, value: faker.random.number(8) + faker.random.number(3) });
-    const leaderBoard = await User.leaderBoard();
-    const diff = 50 - leaderBoard[0].score; 
-    console.log(chalk.green(`${diff} points to go!`));
-    if(leaderBoard[0].score > 50){
+    const { leaderBoard, isRunning } = await User.leaderBoard();
+    if(!isRunning){
       running = false;
     }
     return new Promise((res)=> {
@@ -127,8 +127,9 @@ const server = app.listen(port = process.env.PORT || 3000, ()=> {
 const ws = require('ws');
 const socketServer = new ws.Server({ server });
 let clients = [];
-socketServer.on('connection', (client)=> {
+socketServer.on('connection', async(client)=> {
   clients.push(client);
+  client.send(JSON.stringify(await User.leaderBoard()));
 });
 
 app.get('/run', (req, res, next)=> {

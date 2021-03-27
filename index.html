@@ -1,17 +1,42 @@
 <html>
   <head>
+    <title>The Game</title>
+<style>
+body {
+  font-family: verdana;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+  
+</style>
   </head>
   <body>
     <h1>The Greatest Game of All Time</h1>
+    <a>Run</a>
     <ul>
     </ul>
   <script>
     const socket = new WebSocket(window.document.location.origin.replace('http', 'ws'));
     const ul = document.querySelector('ul');
+    const a = document.querySelector('a');
 
     socket.addEventListener('message', (ev)=> {
       ul.innerHTML = '';
-      JSON.parse(ev.data).forEach( score => {
+      const { leaderBoard, isRunning, diff, limit } = JSON.parse(ev.data);
+      if(!isRunning){
+        a.setAttribute('href', '/run');
+        a.innerHTML = 'Run';
+      }
+      else {
+        a.removeAttribute('href');
+        a.innerHTML = `Game ends at ${limit}. ${diff} more points ends the game`;
+      }
+      leaderBoard.forEach( score => {
         console.log(score);
         ul.innerHTML += `<li>${ JSON.parse(score.user).name }(${ score.score })</li>`;
       });
