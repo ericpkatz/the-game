@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "redis-server & nodemon server"
+    "start:dev": "redis-server & END=50 nodemon server"
   },
   "keywords": [],
   "author": "",

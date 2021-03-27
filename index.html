@@ -34,7 +34,7 @@ body {
       }
       else {
         a.removeAttribute('href');
-        a.innerHTML = `Game ends at ${limit}. ${diff} more points ends the game`;
+        a.innerHTML = `Game ends at ${limit}. <br />${diff} more points ends the game`;
       }
       leaderBoard.forEach( score => {
         console.log(score);

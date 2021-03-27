@@ -1,4 +1,4 @@
-const END = process.env.END || 20;
+const END = process.env.END ? process.env.END*1 : 20;
 
 const redis = require('redis');
 const client = redis.createClient(process.env.REDIS_URL);
@@ -70,7 +70,8 @@ User.leaderBoard = function(){
           score: result[i + 1]
         });
       }
-      res({ leaderBoard: board, isRunning: board[0].score <= END, diff: END - board[0].score, limit: END});
+      const topScore = board[0] ? board[0].score : 0;
+      res({ leaderBoard: board, isRunning: topScore <= END, diff: END - topScore, limit: END});
     });
   });
 }
