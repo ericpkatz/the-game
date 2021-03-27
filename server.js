@@ -132,9 +132,11 @@ socketServer.on('connection', (client)=> {
 });
 
 app.get('/run', (req, res, next)=> {
-  running = true;
-  run();
-  res.send('running');
+  if(!running){
+    running = true;
+    run();
+  }
+  res.redirect('/');
 
 });
 
