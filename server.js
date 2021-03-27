@@ -3,6 +3,7 @@ const client = redis.createClient();
 const express = require('express');
 const app = express();
 const path = require('path');
+const chalk = require('chalk');
 
 const Sequelize = require('sequelize');
 const { QueryTypes, UUID, UUIDV4, STRING, INTEGER } = Sequelize;
@@ -27,6 +28,11 @@ const Point = conn.define('point', {
 });
 
 Point.belongsTo(User);
+
+Point.addHook('afterCreate', async()=> {
+  const leaderBoard = await User.leaderBoard();
+  clients.forEach(client => client.send(JSON.stringify(leaderBoard)));
+});
 
 Point.addHook('beforeCreate', (points)=> {
   return new Promise(async(res, rej)=> {
@@ -95,10 +101,11 @@ const run = async()=> {
     const user = faker.random.arrayElement(users);
     await Point.create({ userId: user.id, value: faker.random.number(8) + faker.random.number(3) });
     const leaderBoard = await User.leaderBoard();
-    if(leaderBoard[0].score > 100){
+    const diff = 50 - leaderBoard[0].score; 
+    console.log(chalk.green(`${diff} points to go!`));
+    if(leaderBoard[0].score > 50){
       running = false;
     }
-    clients.forEach(client => client.send(JSON.stringify(leaderBoard)));
     return new Promise((res)=> {
       setTimeout(()=> {
          res();
