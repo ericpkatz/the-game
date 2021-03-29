@@ -2,12 +2,22 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-const { User, run } = require('./db');
+const { User } = require('./db');
+const { run } = require('./game');
+const { get } = require('./Leaderboard');
 
-app.get('/run', (req, res, next)=> {
-  run();
-  res.redirect('/');
+app.get('/run', async(req, res, next)=> {
 
+  try {
+    const leaderboard = await get();
+    if(!leaderboard.isRunning){
+      run();
+    }
+    res.redirect('/');
+  }
+  catch(ex){
+    next(ex);
+  }
 });
 
 app.get('/', (req, res, next)=> {

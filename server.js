@@ -1,5 +1,7 @@
-const { app, run, User } = require('./app');
-const { addClient } = require('./socketServer');
+const { app } = require('./app');
+const { addClient, send } = require('./socketServer');
+const { get } = require('./Leaderboard');
+const { run } = require('./game');
 
 let port;
 
@@ -13,5 +15,5 @@ const socketServer = new ws.Server({ server });
 socketServer.on('connection', async(client)=> {
   //remove old sockets
   addClient(client);
-  client.send(JSON.stringify(await User.leaderBoard()));
+  send({ client, message: await get()});
 });
